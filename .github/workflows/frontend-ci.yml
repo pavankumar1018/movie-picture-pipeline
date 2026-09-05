@@ -1,4 +1,4 @@
-```yaml
+
 name: Frontend CI
 
 on:
@@ -85,4 +85,4 @@ jobs:
           tags: mp-frontend:ci
           build-args: |
             REACT_APP_MOVIE_API_URL=${{ env.REACT_APP_MOVIE_API_URL }}
-```
+
