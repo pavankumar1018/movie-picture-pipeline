@@ -1,4 +1,4 @@
-```dockerfile
+
 FROM public.ecr.aws/docker/library/node:18.14.2-alpine3.17
 
 ARG REACT_APP_MOVIE_API_URL
@@ -23,4 +23,4 @@ EXPOSE 3000
 
 # Start the React app when the container starts
 CMD ["npm", "run", "serve"]
-```
+
