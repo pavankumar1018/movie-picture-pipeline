@@ -1,38 +1,34 @@
-FROM public.ecr.aws/docker/library/python:3.10-alpine
+FROM python:3.10-slim-bookworm
 
 ENV FLASK_RUN_HOST=0.0.0.0
 
 WORKDIR /app
 
 # Install system dependencies required to build uWSGI
-RUN apk add --no-cache \
-    build-base \
-    linux-headers \
-    pcre \
-    pcre-dev \
-    openssl \
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    gcc \
+    libpcre3-dev \
     libffi-dev \
-    && pip install --no-cache-dir pipenv
+    libssl-dev \
+    openssl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create application user
-RUN adduser -u 1000 -D app
+# Install Pipenv
+RUN pip install --no-cache-dir pipenv
 
 # Copy dependency files first
-COPY Pipfile Pipfile.lock /app/
+COPY Pipfile Pipfile.lock ./
 
-# Install Python dependencies
+# Install Python dependencies from Pipfile.lock
 RUN pipenv install --system --deploy
 
 # Copy application code
-COPY . /app
+COPY . .
 
-# Create uWSGI socket directory
-RUN mkdir -p /var/www/app \
-    && chown -R app:app /app /var/www/app
+# Create runtime directory for uWSGI socket
+RUN mkdir -p /var/www/app
 
-# Run as non-root user
-USER app
-
-EXPOSE 5000
-
+# Start uWSGI
 CMD ["uwsgi", "--http", ":5000", "--master", "--enable-threads", "-s", "/var/www/app/app.sock", "--manage-script-name", "--mount", "/=app:app"]
