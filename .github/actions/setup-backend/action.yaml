@@ -13,7 +13,7 @@ runs:
       shell: bash
       run: |
         sudo apt-get update
-        sudo apt-get install -y python3.10-dev build-essential
+        sudo apt-get install -y python3-dev build-essential
 
     - name: Cache pipenv virtualenv
       uses: actions/cache@v4
